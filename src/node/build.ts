@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
 import { join, dirname, isAbsolute, parse, resolve } from 'path'
-import chalk from 'chalk'
-import fs from 'fs-extra'
+import * as chalk from 'chalk'
+import * as fs from 'fs-extra'
 import { build as viteBuild, resolveConfig, ResolvedConfig } from 'vite'
 import { renderToString, SSRContext } from 'vue/server-renderer'
 import { JSDOM, VirtualConsole } from 'jsdom'
 import { RollupOutput } from 'rollup'
 import type { VitePluginPWAAPI } from 'vite-plugin-pwa'
-import { ViteSSGContext, ViteSSGOptions } from '../client'
-import { renderPreloadLinks } from './preload-links'
-import { buildLog, routesToPaths, getSize } from './utils'
-import { getCritters } from './critical'
+import { ViteSSGContext, ViteSSGOptions } from '../client/index.js'
+import { renderPreloadLinks } from './preload-links.js'
+import { buildLog, routesToPaths, getSize } from './utils.js'
+import { getCritters } from './critical.js'
 
 export interface Manifest {
   [key: string]: string[]
@@ -88,8 +88,7 @@ export async function build(cliOptions: Partial<ViteSSGOptions> = {}) {
     mode: config.mode,
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { createApp } = require(join(ssgOut, `${parse(ssrEntry).name}.${isTypeModule ? 'cjs' : 'js'}`)) as { createApp: CreateAppFactory }
+  const { createApp } = await import(join(ssgOut, `${parse(ssrEntry).name}.${isTypeModule ? 'cjs' : 'js'}`)) as { createApp: CreateAppFactory }
 
   const { routes } = await createApp(false)
 
@@ -102,7 +101,7 @@ export async function build(cliOptions: Partial<ViteSSGOptions> = {}) {
 
   buildLog('Rendering Pages...', routesPaths.length)
 
-  const critters = crittersOptions !== false ? getCritters(outDir, crittersOptions) : undefined
+  const critters = crittersOptions !== false ? await getCritters(outDir, crittersOptions) : undefined
   if (critters)
     console.log(`${chalk.gray('[vite-ssg]')} ${chalk.blue('Critical CSS generation enabled via `critters`')}`)
 
@@ -151,7 +150,7 @@ export async function build(cliOptions: Partial<ViteSSGOptions> = {}) {
         if (critters)
           transformed = await critters.process(transformed)
 
-        const formatted = format(transformed, formatting)
+        const formatted = await format(transformed, formatting)
 
         const relativeRouteFile = `${(route.endsWith('/') ? `${route}index` : route).replace(/^\//g, '')}.html`
         const filename = dirStyle === 'nested'
@@ -209,10 +208,9 @@ function renderHTML({ indexHTML, appHTML, initialState }: { indexHTML: string; a
     )
 }
 
-function format(html: string, formatting: ViteSSGOptions['formatting']) {
+async function format(html: string, formatting: ViteSSGOptions['formatting']) {
   if (formatting === 'minify') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require('html-minifier').minify(html, {
+    return (await import('html-minifier')).minify(html, {
       collapseWhitespace: true,
       caseSensitive: true,
       collapseInlineTagWhitespace: false,
@@ -221,8 +219,7 @@ function format(html: string, formatting: ViteSSGOptions['formatting']) {
     })
   }
   else if (formatting === 'prettify') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require('prettier').format(html, { semi: false, parser: 'html' })
+    return (await import('prettier')).format(html, { semi: false, parser: 'html' })
   }
   return html
 }

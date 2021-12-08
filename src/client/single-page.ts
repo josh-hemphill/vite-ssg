@@ -1,8 +1,8 @@
 import { createSSRApp, Component, createApp as createClientApp } from 'vue'
 import { createHead, HeadClient } from '@vueuse/head'
-import { ViteSSGClientOptions, ViteSSGContext } from '../types'
-import { deserializeState, serializeState } from '../utils/state'
-import { ClientOnly } from './components/ClientOnly'
+import type { ViteSSGClientOptions, ViteSSGContext } from '../types'
+import { deserializeState, serializeState } from '../utils/state.js'
+import { ClientOnly } from './components/ClientOnly.js'
 
 export * from '../types'
 

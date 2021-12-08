@@ -1,6 +1,8 @@
+#!/usr/bin/env node
+'use strict'
 /* eslint-disable no-unused-expressions */
-import yargs from 'yargs'
-import { build } from './build'
+import * as yargs from 'yargs'
+import { build } from './build.js'
 
 yargs
   .scriptName('vite-ssg')

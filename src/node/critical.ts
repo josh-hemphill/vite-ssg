@@ -1,10 +1,9 @@
 import type Critters from 'critters'
 import type { Options } from 'critters'
 
-export function getCritters(outDir: string, options: Options = {}): Critters | undefined {
+export async function getCritters(outDir: string, options: Options = {}): Promise<(Critters | undefined)> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const CrittersClass = require('critters') as typeof import('critters').default
+    const CrittersClass = (await import('critters')).default
     return new CrittersClass({
       path: outDir,
       logLevel: 'warn',

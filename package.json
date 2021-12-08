@@ -2,18 +2,19 @@
   "name": "vite-ssg",
   "description": "Server-side generation for Vite",
   "version": "0.16.2",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     "./": "./",
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
     },
     "./single-page": {
-      "require": "./dist/client/single-page.js",
-      "import": "./dist/client/single-page.mjs"
+      "require": "./dist/client/single-page.cjs",
+      "import": "./dist/client/single-page.js"
     }
   },
   "license": "MIT",
@@ -44,8 +45,8 @@
   ],
   "scripts": {
     "dev": "tsup -- --watch src",
-    "copy-readme-files": "esno scripts/copy-readme-files.ts",
-    "copy-single-page-dts": "esno scripts/copy-single-page-dts.ts",
+    "copy-readme-files": "esmo scripts/copy-readme-files.ts",
+    "copy-single-page-dts": "esmo scripts/copy-single-page-dts.ts",
     "example:dev": "npm run copy-readme-files && npm -C examples/multiple-pages run dev",
     "example:build": "npm run copy-readme-files && npm -C examples/multiple-pages run build",
     "example:serve": "npm run copy-readme-files && npm -C examples/multiple-pages run serve",
@@ -82,14 +83,16 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.10.0",
     "@types/fs-extra": "^9.0.13",
+    "@types/html-minifier": "4.0.0",
     "@types/jsdom": "^16.2.13",
+    "@types/prettier": "2.4.1",
     "@types/yargs": "^17.0.5",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@vueuse/head": "^0.6.0",
     "bumpp": "^7.1.1",
     "critters": "^0.0.14",
     "eslint": "^8.2.0",
-    "esno": "^0.12.0",
+    "esno": "^0.12.1",
     "rollup": "^2.60.0",
     "standard-version": "^9.3.2",
     "tsup": "^5.7.1",

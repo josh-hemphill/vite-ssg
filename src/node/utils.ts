@@ -1,4 +1,4 @@
-import chalk from 'chalk'
+import * as chalk from 'chalk'
 import { RouteRecordRaw } from 'vue-router'
 
 export function buildLog(text: string, count?: number) {
