@@ -7,6 +7,7 @@ export default <Options>{
     'src/node/cli.ts',
   ],
   dts: true,
+  target: 'node14',
   splitting: true,
   format: [
     'esm',

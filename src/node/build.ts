@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 import { join, dirname, isAbsolute, parse, resolve } from 'path'
-import * as chalk from 'chalk'
-import * as fs from 'fs-extra'
+import { pathToFileURL } from 'url'
+import chalk from 'chalk'
+// @ts-ignore
+import fs from 'fs-extra'
 import { build as viteBuild, resolveConfig, ResolvedConfig } from 'vite'
 import { renderToString, SSRContext } from 'vue/server-renderer'
 import { JSDOM, VirtualConsole } from 'jsdom'
@@ -75,20 +77,23 @@ export async function build(cliOptions: Partial<ViteSSGOptions> = {}) {
   const ssrEntry = await resolveAlias(config, entry)
   await viteBuild({
     build: {
+      polyfillModulePreload: !isTypeModule,
       ssr: ssrEntry,
       outDir: ssgOut,
       minify: false,
       cssCodeSplit: false,
       rollupOptions: {
         output: {
-          entryFileNames: `[name].${isTypeModule ? 'cjs' : 'js'}`,
+          format: isTypeModule ? 'esm' : 'commonjs',
+          esModule: isTypeModule,
+          entryFileNames: '[name].js',
         },
       },
     },
     mode: config.mode,
   })
 
-  const { createApp } = await import(join(ssgOut, `${parse(ssrEntry).name}.${isTypeModule ? 'cjs' : 'js'}`)) as { createApp: CreateAppFactory }
+  const { createApp } = await import(pathToFileURL(join(ssgOut, `${parse(ssrEntry).name}.${'js'}`)).toString()) as { createApp: CreateAppFactory }
 
   const { routes } = await createApp(false)
 
